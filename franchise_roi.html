@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Franchise Size S - ROI Calculator V4</title>
+    <style>
+        :root {
+            --primary: #991b1b;
+            --primary-dark: #7f1d1d;
+            --secondary: #0f172a;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text: #1e293b;
+            --text-light: #64748b;
+            --border: #e2e8f0;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+            padding-bottom: 40px;
+        }
+
+        .header {
+            background-color: var(--primary);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-bottom: 4px solid var(--primary-dark);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .header p {
+            margin: 5px 0 0 0;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 15px;
+        }
+
+        /* Dashboard Top Cards */
+        .grid-kpi {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        @media (min-width: 768px) {
+            .grid-kpi {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        .kpi-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            transition: transform 0.2s;
+        }
+
+        .kpi-card.highlight {
+            border-top: 4px solid var(--primary);
+        }
+
+        .kpi-title {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            font-weight: 600;
+            margin-bottom: 8px;
+            height: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .kpi-value {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--secondary);
+        }
+
+        .kpi-card.highlight .kpi-value {
+            color: var(--primary);
+        }
+
+        /* Interactive Inputs Section */
+        .main-layout {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            align-items: start;
+        }
+
+        @media (min-width: 800px) {
+            .main-layout {
+                grid-template-columns: 4fr 5fr;
+            }
+        }
+
+        .panel {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+
+        .panel-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--secondary);
+            margin-top: 0;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--bg);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Sliders & Inputs */
+        .input-group {
+            margin-bottom: 18px;
+        }
+
+        .input-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .input-label .val-display {
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 5px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        /* Tables & Breakdowns */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        .data-table td {
+            padding: 9px 8px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .data-table td.num {
+            text-align: right;
+            font-weight: 600;
+        }
+
+        .bold-row {
+            font-weight: 700;
+            background-color: var(--bg);
+        }
+
+        .primary-row {
+            font-weight: 700;
+            background-color: #fef2f2;
+            color: var(--primary);
+        }
+
+        /* Reset Button for iPad optimization */
+        .btn-reset {
+            background-color: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            color: var(--text-light);
+        }
+        .btn-reset:active {
+            background-color: #e2e8f0;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>เครื่องมือประเมินผลตอบแทนการลงทุน (ROI Calculator)</h1>
+        <p>Franchise Package Size S — ปรับต้นทุนและค่าใช้จ่ายได้แบบ Real-time</p>
+    </div>
+
+    <div class="container">
+        
+        <!-- Top KPIs -->
+        <div class="grid-kpi">
+            <div class="kpi-card">
+                <div class="kpi-title">งบลงทุนเริ่มต้น</div>
+                <div id="kpi-investment" class="kpi-value">710,000 ฿</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-title">ยอดขาย / เดือน</div>
+                <div id="kpi-revenue" class="kpi-value">0 ฿</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-title">กำไรสุทธิ / เดือน</div>
+                <div id="kpi-profit" class="kpi-value">0 ฿</div>
+            </div>
+            <div class="kpi-card highlight">
+                <div class="kpi-title">ระยะเวลาคืนทุน</div>
+                <div id="kpi-payback" class="kpi-value" style="font-size: 1.6rem;">0 เดือน</div>
+            </div>
+        </div>
+
+        <!-- Interactive Sliders & Table Breakdown -->
+        <div class="main-layout">
+            
+            <!-- Left Side: Control Panel -->
+            <div>
+                <div class="panel">
+                    <div class="panel-title">
+                        <span>1. ปรับสมมติฐานการขายและต้นทุน</span>
+                        <button class="btn-reset" onclick="resetSliders()">ค่าเริ่มต้นทั้งหมด</button>
+                    </div>
+                    
+                    <div class="input-group">
+                        <div class="input-label">
+                            <span>จำนวนบิล (ลูกค้า) / วัน</span>
+                            <span id="label-bills" class="val-display">60 บิล</span>
+                        </div>
+                        <input type="range" id="input-bills" min="20" max="200" step="5" value="60" oninput="calculateROI()">
+                    </div>
+
+                    <div class="input-group">
+                        <div class="input-label">
+                            <span>ยอดซื้อเฉลี่ยต่อบิล</span>
+                            <span id="label-ticket" class="val-display">80 ฿</span>
+                        </div>
+                        <input type="range" id="input-ticket" min="40" max="200" step="5" value="80" oninput="calculateROI()">
+                    </div>
+                    
+                    <div class="input-group">
+                        <div class="input-label">
+                            <span>ต้นทุนสินค้าขาย (COGS %)</span>
+                            <span id="label-cogs" class="val-display">27.09%</span>
+                        </div>
+                        <input type="range" id="input-cogs" min="15" max="60" step="0.01" value="27.09" oninput="calculateROI()">
+                    </div>
+
+                    <div class="input-group">
+                        <div class="input-label">
+                            <span>เงินลงทุนแฟรนไชส์</span>
+                            <span id="label-investment" class="val-display">710,000 ฿</span>
+                        </div>
+                        <input type="range" id="input-investment" min="500000" max="1500000" step="50000" value="710000" oninput="calculateROI()">
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-title">2. ปรับเปลี่ยนค่าใช้จ่ายดำเนินงาน</div>
+                    
+                    <div class="input-group">
+                        <div class="input-label">
+                            <span>1. ค่าใช้จ่ายด้านพนักงาน</span>
+                            <span id="label-staff" class="val-display">24,000 ฿</span>
+                        </div>
+                        <input type="range" id="input-staff" min="0" max="60000" step="1000" value="24000" oninput="calculateROI()">
+                    </div>
+
+                    <div class="input-group">
+                        <div class="input-label">
+                            <span>2. ค่าเช่าพื้นที่</span>
+                            <span id="label-rent" class="val-display">10,000 ฿</span>
+                        </div>
+                        <input type="range" id="input-rent" min="0" max="50000" step="1000" value="10000" oninput="calculateROI()">
+                    </div>
+
+                    <div class="input-group">
+                        <div class="input-label">
+                            <span>3. ค่าไฟฟ้า</span>
+                            <span id="label-electric" class="val-display">4,000 ฿</span>
+                        </div>
+                        <input type="range" id="input-electric" min="0" max="15000" step="500" value="4000" oninput="calculateROI()">
+                    </div>
+
+                    <div class="input-group">
+                        <div class="input-label">
+                            <span>4. ค่าน้ำ</span>
+                            <span id="label-water" class="val-display">200 ฿</span>
+                        </div>
+                        <input type="range" id="input-water" min="0" max="2000" step="50" value="200" oninput="calculateROI()">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Side: Detailed Table Breakdown -->
+            <div class="panel" style="position: sticky; top: 100px;">
+                <div class="panel-title">สรุปโครงสร้างรายรับ - รายจ่าย</div>
+                
+                <table class="data-table">
+                    <tr>
+                        <td>ยอดขายเฉลี่ยต่อวัน</td>
+                        <td id="table-daily-revenue" class="num">0 ฿</td>
+                    </tr>
+                    <tr class="bold-row">
+                        <td>รวมยอดขายต่อเดือน</td>
+                        <td id="table-monthly-revenue" class="num">0 ฿</td>
+                    </tr>
+                    <tr>
+                        <td id="table-text-cogs">ต้นทุนสินค้าขาย (COGS 27.09%)</td>
+                        <td id="table-cogs" class="num" style="color: #dc2626;">0 ฿</td>
+                    </tr>
+                    <tr class="bold-row">
+                        <td>กำไรขั้นต้น (Gross Profit)</td>
+                        <td id="table-gross-profit" class="num">0 ฿</td>
+                    </tr>
+                    <tr>
+                        <td>Royalty Fee (2.00%)</td>
+                        <td id="table-royalty" class="num" style="color: #dc2626;">0 ฿</td>
+                    </tr>
+                    
+                    <!-- OPEX Breakdown rows -->
+                    <tr>
+                        <td style="padding-left: 15px; color: var(--text-light); font-size: 0.85rem;">- ค่าใช้จ่ายด้านพนักงาน</td>
+                        <td id="table-staff" class="num" style="color: #64748b; font-size: 0.85rem;">0 ฿</td>
+                    </tr>
+                    <tr>
+                        <td style="padding-left: 15px; color: var(--text-light); font-size: 0.85rem;">- ค่าเช่าพื้นที่</td>
+                        <td id="table-rent" class="num" style="color: #64748b; font-size: 0.85rem;">0 ฿</td>
+                    </tr>
+                    <tr>
+                        <td style="padding-left: 15px; color: var(--text-light); font-size: 0.85rem;">- ค่าไฟฟ้า / ค่าน้ำ</td>
+                        <td id="table-utilities" class="num" style="color: #64748b; font-size: 0.85rem;">0 ฿</td>
+                    </tr>
+                    <tr>
+                        <td style="padding-left: 15px; color: var(--text-light); font-size: 0.85rem;">- ค่าใช้จ่ายคงที่อื่นๆ*</td>
+                        <td class="num" style="color: #64748b; font-size: 0.85rem;">6,705 ฿</td>
+                    </tr>
+                    
+                    <tr class="bold-row">
+                        <td>รวมค่าใช้จ่ายดำเนินงานทั้งหมด (OPEX)</td>
+                        <td id="table-opex" class="num" style="color: #dc2626;">0 ฿</td>
+                    </tr>
+                    <tr class="primary-row">
+                        <td>กำไรสุทธิก่อนหักภาษี (EBITDA)</td>
+                        <td id="table-net-profit" class="num">0 ฿</td>
+                    </tr>
+                    <tr class="bold-row">
+                        <td>อัตรากำไรสุทธิ (Net Margin %)</td>
+                        <td id="table-net-margin" class="num">0%</td>
+                    </tr>
+                </table>
+                <p style="font-size: 0.75rem; color: var(--text-light); margin-top: 15px; line-height: 1.3;">
+                    *ค่าใช้จ่ายคงที่อื่นๆ ประกอบด้วย: ค่าโทรศัพท์ (400฿), ค่าเช่าระบบ POS (1,200฿), ค่าวัสดุสิ้นเปลือง (1,000฿), ค่าอินเตอร์เน็ต (600฿), ค่าการตลาดคงที่ (3,000฿), และค่าใช้จ่ายเบ็ดเตล็ด (505฿)
+                </p>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+        // Fixed other OPEX from original spreadsheet (44,905 - 24,000 - 10,000 - 4,000 - 200 = 6,705)
+        const otherOpexFixed = 6705;
+        const royaltyRate = 0.02;
+
+        function formatNumber(num) {
+            return num.toLocaleString('th-TH', { maximumFractionDigits: 0 });
+        }
+
+        function calculateROI() {
+            // Get Sales inputs
+            const bills = parseFloat(document.getElementById('input-bills').value);
+            const ticket = parseFloat(document.getElementById('input-ticket').value);
+            const cogsPercent = parseFloat(document.getElementById('input-cogs').value);
+            const investment = parseFloat(document.getElementById('input-investment').value);
+
+            // Get OPEX inputs
+            const staff = parseFloat(document.getElementById('input-staff').value);
+            const rent = parseFloat(document.getElementById('input-rent').value);
+            const electric = parseFloat(document.getElementById('input-electric').value);
+            const water = parseFloat(document.getElementById('input-water').value);
+
+            // Update range labels text
+            document.getElementById('label-bills').innerText = bills + " บิล";
+            document.getElementById('label-ticket').innerText = formatNumber(ticket) + " ฿";
+            document.getElementById('label-cogs').innerText = cogsPercent.toFixed(2) + "%";
+            document.getElementById('label-investment').innerText = formatNumber(investment) + " ฿";
+            document.getElementById('label-staff').innerText = formatNumber(staff) + " ฿";
+            document.getElementById('label-rent').innerText = formatNumber(rent) + " ฿";
+            document.getElementById('label-electric').innerText = formatNumber(electric) + " ฿";
+            document.getElementById('label-water').innerText = formatNumber(water) + " ฿";
+
+            // Calculations
+            const dailyRevenue = bills * ticket;
+            const monthlyRevenue = dailyRevenue * 30;
+            const cogsRate = cogsPercent / 100;
+            const cogs = monthlyRevenue * cogsRate;
+            const grossProfit = monthlyRevenue - cogs;
+            const royalty = monthlyRevenue * royaltyRate;
+            
+            // Total OPEX dynamically calculated
+            const totalOpex = staff + rent + electric + water + otherOpexFixed;
+            const netProfit = grossProfit - royalty - totalOpex;
+            const netMargin = monthlyRevenue > 0 ? (netProfit / monthlyRevenue) * 100 : 0;
+
+            // Payback Period logic
+            let paybackPeriodText = "";
+            if (netProfit <= 0) {
+                paybackPeriodText = "ไม่สามารถคืนทุนได้ (ติดลบ)";
+            } else {
+                const months = investment / netProfit;
+                if (months < 1) {
+                    paybackPeriodText = "น้อยกว่า 1 เดือน";
+                } else {
+                    paybackPeriodText = Math.ceil(months) + " เดือน";
+                }
+            }
+
+            // Update Top KPIs Dashboard
+            document.getElementById('kpi-investment').innerText = formatNumber(investment) + " ฿";
+            document.getElementById('kpi-revenue').innerText = formatNumber(monthlyRevenue) + " ฿";
+            document.getElementById('kpi-profit').innerText = (netProfit > 0 ? "" : "-") + formatNumber(Math.abs(netProfit)) + " ฿";
+            document.getElementById('kpi-payback').innerText = paybackPeriodText;
+
+            // Update Detailed Table View
+            document.getElementById('table-daily-revenue').innerText = formatNumber(dailyRevenue) + " ฿";
+            document.getElementById('table-monthly-revenue').innerText = formatNumber(monthlyRevenue) + " ฿";
+            
+            document.getElementById('table-text-cogs').innerText = "ต้นทุนสินค้าขาย (COGS " + cogsPercent.toFixed(2) + "%)";
+            document.getElementById('table-cogs').innerText = "- " + formatNumber(cogs) + " ฿";
+            
+            document.getElementById('table-gross-profit').innerText = formatNumber(grossProfit) + " ฿";
+            document.getElementById('table-royalty').innerText = "- " + formatNumber(royalty) + " ฿";
+            
+            // OPEX Breakdown table updates
+            document.getElementById('table-staff').innerText = formatNumber(staff) + " ฿";
+            document.getElementById('table-rent').innerText = formatNumber(rent) + " ฿";
+            document.getElementById('table-utilities').innerText = formatNumber(electric + water) + " ฿";
+            document.getElementById('table-opex').innerText = "- " + formatNumber(totalOpex) + " ฿";
+            
+            document.getElementById('table-net-profit').innerText = (netProfit > 0 ? "" : "-") + formatNumber(Math.abs(netProfit)) + " ฿";
+            document.getElementById('table-net-margin').innerText = netMargin.toFixed(2) + "%";
+        }
+
+        function resetSliders() {
+            document.getElementById('input-bills').value = 60;
+            document.getElementById('input-ticket').value = 80;
+            document.getElementById('input-cogs').value = 27.09;
+            document.getElementById('input-investment').value = 710000;
+            document.getElementById('input-staff').value = 24000;
+            document.getElementById('input-rent').value = 10000;
+            document.getElementById('input-electric').value = 4000;
+            document.getElementById('input-water').value = 200;
+            calculateROI();
+        }
+
+        // Initialize on first load
+        window.onload = function() {
+            calculateROI();
+        };
+    </script>
+</body>
+</html>
