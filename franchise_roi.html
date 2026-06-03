@@ -254,7 +254,7 @@
             color: var(--primary);
         }
 
-        /* Reset Button */
+        /* Buttons */
         .btn-reset {
             background-color: #f1f5f9;
             border: 1px solid #cbd5e1;
@@ -268,6 +268,25 @@
         }
         .btn-reset:active, .btn-reset:hover {
             background-color: #e2e8f0;
+        }
+
+        .btn-preset {
+            background-color: #ffffff;
+            border: 1px solid #cbd5e1;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            color: var(--text);
+            transition: all 0.2s ease;
+            flex: 1;
+            text-align: center;
+        }
+        .btn-preset:hover, .btn-preset:active {
+            border-color: var(--primary);
+            color: var(--primary);
+            background-color: #fef2f2;
         }
     </style>
 </head>
@@ -342,6 +361,10 @@
                             </div>
                         </div>
                         <input type="range" id="input-cogs" min="15" max="80" data-default-max="80" step="0.01" value="32.09" oninput="updateFromSlider('cogs')">
+                        <div style="display: flex; gap: 8px; margin-top: 12px;">
+                            <button class="btn-preset" onclick="setCOGS(32.09)">ร้านทั่วไป (32.09%)</button>
+                            <button class="btn-preset" onclick="setCOGS(27.09)">แบบคาเฟ่ (27.09%)</button>
+                        </div>
                     </div>
 
                     <div class="input-group">
@@ -419,7 +442,7 @@
                         <td id="table-monthly-revenue" class="num">0 ฿</td>
                     </tr>
                     <tr>
-                        <td id="table-text-cogs">ต้นทุนสินค้าขาย (COGS 32.09%)</td>
+                        <td id="table-text-cogs">ต้นทุนสินค้าขาย (COGS)</td>
                         <td id="table-cogs" class="num" style="color: #dc2626;">0 ฿</td>
                     </tr>
                     <tr class="bold-row">
@@ -507,6 +530,13 @@
             // Reset slider max to default if it was dynamically expanded
             slider.max = slider.getAttribute('data-default-max');
             slider.value = val;
+        }
+
+        // Quick set function for COGS buttons
+        function setCOGS(val) {
+            document.getElementById('num-cogs').value = val;
+            document.getElementById('input-cogs').value = val;
+            calculateROI();
         }
 
         function calculateROI() {
