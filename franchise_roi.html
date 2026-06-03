@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Franchise Size S - ROI Calculator V4</title>
+    <title>Franchise Size S - ROI Calculator V4 (Editable Inputs)</title>
     <style>
         :root {
             --primary: #991b1b;
@@ -153,14 +153,54 @@
         .input-label {
             display: flex;
             justify-content: space-between;
+            align-items: center;
             font-size: 0.9rem;
             font-weight: 600;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
         }
 
-        .input-label .val-display {
-            color: var(--primary);
+        /* Number Inputs */
+        .val-input-group {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .val-input {
+            width: 100px;
+            padding: 6px 8px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            text-align: right;
             font-weight: 700;
+            color: var(--primary);
+            font-size: 0.95rem;
+            outline: none;
+            background-color: #fff;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
+            transition: all 0.2s ease;
+        }
+
+        .val-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(153, 27, 27, 0.1);
+        }
+
+        /* Hide HTML5 number input arrows */
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { 
+            -webkit-appearance: none; 
+            margin: 0; 
+        }
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+
+        .unit {
+            color: var(--text-light);
+            font-size: 0.85rem;
+            font-weight: 600;
+            min-width: 25px;
         }
 
         input[type="range"] {
@@ -214,7 +254,7 @@
             color: var(--primary);
         }
 
-        /* Reset Button for iPad optimization */
+        /* Reset Button */
         .btn-reset {
             background-color: #f1f5f9;
             border: 1px solid #cbd5e1;
@@ -224,8 +264,9 @@
             font-weight: 600;
             cursor: pointer;
             color: var(--text-light);
+            transition: background-color 0.2s;
         }
-        .btn-reset:active {
+        .btn-reset:active, .btn-reset:hover {
             background-color: #e2e8f0;
         }
     </style>
@@ -234,7 +275,7 @@
 
     <div class="header">
         <h1>เครื่องมือประเมินผลตอบแทนการลงทุน (ROI Calculator)</h1>
-        <p>Franchise Package Size S — ปรับต้นทุนและค่าใช้จ่ายได้แบบ Real-time</p>
+        <p>Franchise Package Size S — พิมพ์แก้ไขตัวเลขในช่อง หรือเลื่อนแถบได้เลย</p>
     </div>
 
     <div class="container">
@@ -273,33 +314,45 @@
                     <div class="input-group">
                         <div class="input-label">
                             <span>จำนวนบิล (ลูกค้า) / วัน</span>
-                            <span id="label-bills" class="val-display">60 บิล</span>
+                            <div class="val-input-group">
+                                <input type="number" id="num-bills" class="val-input" value="60" oninput="updateFromNum('bills')">
+                                <span class="unit">บิล</span>
+                            </div>
                         </div>
-                        <input type="range" id="input-bills" min="20" max="200" step="5" value="60" oninput="calculateROI()">
+                        <input type="range" id="input-bills" min="0" max="300" data-default-max="300" step="1" value="60" oninput="updateFromSlider('bills')">
                     </div>
 
                     <div class="input-group">
                         <div class="input-label">
                             <span>ยอดซื้อเฉลี่ยต่อบิล</span>
-                            <span id="label-ticket" class="val-display">80 ฿</span>
+                            <div class="val-input-group">
+                                <input type="number" id="num-ticket" class="val-input" value="80" oninput="updateFromNum('ticket')">
+                                <span class="unit">฿</span>
+                            </div>
                         </div>
-                        <input type="range" id="input-ticket" min="40" max="200" step="5" value="80" oninput="calculateROI()">
+                        <input type="range" id="input-ticket" min="0" max="500" data-default-max="500" step="5" value="80" oninput="updateFromSlider('ticket')">
                     </div>
                     
                     <div class="input-group">
                         <div class="input-label">
                             <span>ต้นทุนสินค้าขาย (COGS %)</span>
-                            <span id="label-cogs" class="val-display">32.09%</span>
+                            <div class="val-input-group">
+                                <input type="number" id="num-cogs" class="val-input" value="32.09" step="0.01" oninput="updateFromNum('cogs')">
+                                <span class="unit">%</span>
+                            </div>
                         </div>
-                        <input type="range" id="input-cogs" min="15" max="60" step="0.01" value="32.09" oninput="calculateROI()">
+                        <input type="range" id="input-cogs" min="15" max="80" data-default-max="80" step="0.01" value="32.09" oninput="updateFromSlider('cogs')">
                     </div>
 
                     <div class="input-group">
                         <div class="input-label">
                             <span>เงินลงทุนแฟรนไชส์</span>
-                            <span id="label-investment" class="val-display">710,000 ฿</span>
+                            <div class="val-input-group">
+                                <input type="number" id="num-investment" class="val-input" value="710000" oninput="updateFromNum('investment')">
+                                <span class="unit">฿</span>
+                            </div>
                         </div>
-                        <input type="range" id="input-investment" min="500000" max="1500000" step="50000" value="710000" oninput="calculateROI()">
+                        <input type="range" id="input-investment" min="100000" max="3000000" data-default-max="3000000" step="10000" value="710000" oninput="updateFromSlider('investment')">
                     </div>
                 </div>
 
@@ -309,33 +362,45 @@
                     <div class="input-group">
                         <div class="input-label">
                             <span>1. ค่าใช้จ่ายด้านพนักงาน</span>
-                            <span id="label-staff" class="val-display">24,000 ฿</span>
+                            <div class="val-input-group">
+                                <input type="number" id="num-staff" class="val-input" value="24000" oninput="updateFromNum('staff')">
+                                <span class="unit">฿</span>
+                            </div>
                         </div>
-                        <input type="range" id="input-staff" min="0" max="60000" step="1000" value="24000" oninput="calculateROI()">
+                        <input type="range" id="input-staff" min="0" max="100000" data-default-max="100000" step="1000" value="24000" oninput="updateFromSlider('staff')">
                     </div>
 
                     <div class="input-group">
                         <div class="input-label">
                             <span>2. ค่าเช่าพื้นที่</span>
-                            <span id="label-rent" class="val-display">10,000 ฿</span>
+                            <div class="val-input-group">
+                                <input type="number" id="num-rent" class="val-input" value="10000" oninput="updateFromNum('rent')">
+                                <span class="unit">฿</span>
+                            </div>
                         </div>
-                        <input type="range" id="input-rent" min="0" max="50000" step="1000" value="10000" oninput="calculateROI()">
+                        <input type="range" id="input-rent" min="0" max="100000" data-default-max="100000" step="1000" value="10000" oninput="updateFromSlider('rent')">
                     </div>
 
                     <div class="input-group">
                         <div class="input-label">
                             <span>3. ค่าไฟฟ้า</span>
-                            <span id="label-electric" class="val-display">4,000 ฿</span>
+                            <div class="val-input-group">
+                                <input type="number" id="num-electric" class="val-input" value="4000" oninput="updateFromNum('electric')">
+                                <span class="unit">฿</span>
+                            </div>
                         </div>
-                        <input type="range" id="input-electric" min="0" max="15000" step="500" value="4000" oninput="calculateROI()">
+                        <input type="range" id="input-electric" min="0" max="30000" data-default-max="30000" step="500" value="4000" oninput="updateFromSlider('electric')">
                     </div>
 
                     <div class="input-group">
                         <div class="input-label">
                             <span>4. ค่าน้ำ</span>
-                            <span id="label-water" class="val-display">200 ฿</span>
+                            <div class="val-input-group">
+                                <input type="number" id="num-water" class="val-input" value="200" oninput="updateFromNum('water')">
+                                <span class="unit">฿</span>
+                            </div>
                         </div>
-                        <input type="range" id="input-water" min="0" max="2000" step="50" value="200" oninput="calculateROI()">
+                        <input type="range" id="input-water" min="0" max="5000" data-default-max="5000" step="50" value="200" oninput="updateFromSlider('water')">
                     </div>
                 </div>
             </div>
@@ -407,7 +472,7 @@
     </div>
 
     <script>
-        // Fixed other OPEX from original spreadsheet (44,905 - 24,000 - 10,000 - 4,000 - 200 = 6,705)
+        // Fixed other OPEX from original spreadsheet
         const otherOpexFixed = 6705;
         const royaltyRate = 0.02;
 
@@ -415,28 +480,46 @@
             return num.toLocaleString('th-TH', { maximumFractionDigits: 0 });
         }
 
+        // Triggered when typing in the input box
+        function updateFromNum(id) {
+            let val = parseFloat(document.getElementById('num-' + id).value) || 0;
+            let slider = document.getElementById('input-' + id);
+            
+            // If user types a number larger than the slider max, expand the slider max dynamically
+            if (val > parseFloat(slider.max)) {
+                slider.max = val;
+            }
+            slider.value = val;
+            calculateROI();
+        }
+
+        // Triggered when dragging the slider
+        function updateFromSlider(id) {
+            let val = document.getElementById('input-' + id).value;
+            document.getElementById('num-' + id).value = val;
+            calculateROI();
+        }
+
+        // Update exact values when reset is clicked
+        function setValue(id, val) {
+            document.getElementById('num-' + id).value = val;
+            let slider = document.getElementById('input-' + id);
+            // Reset slider max to default if it was dynamically expanded
+            slider.max = slider.getAttribute('data-default-max');
+            slider.value = val;
+        }
+
         function calculateROI() {
-            // Get Sales inputs
-            const bills = parseFloat(document.getElementById('input-bills').value);
-            const ticket = parseFloat(document.getElementById('input-ticket').value);
-            const cogsPercent = parseFloat(document.getElementById('input-cogs').value);
-            const investment = parseFloat(document.getElementById('input-investment').value);
+            // Read from number inputs (which are always synced)
+            const bills = parseFloat(document.getElementById('num-bills').value) || 0;
+            const ticket = parseFloat(document.getElementById('num-ticket').value) || 0;
+            const cogsPercent = parseFloat(document.getElementById('num-cogs').value) || 0;
+            const investment = parseFloat(document.getElementById('num-investment').value) || 0;
 
-            // Get OPEX inputs
-            const staff = parseFloat(document.getElementById('input-staff').value);
-            const rent = parseFloat(document.getElementById('input-rent').value);
-            const electric = parseFloat(document.getElementById('input-electric').value);
-            const water = parseFloat(document.getElementById('input-water').value);
-
-            // Update range labels text
-            document.getElementById('label-bills').innerText = bills + " บิล";
-            document.getElementById('label-ticket').innerText = formatNumber(ticket) + " ฿";
-            document.getElementById('label-cogs').innerText = cogsPercent.toFixed(2) + "%";
-            document.getElementById('label-investment').innerText = formatNumber(investment) + " ฿";
-            document.getElementById('label-staff').innerText = formatNumber(staff) + " ฿";
-            document.getElementById('label-rent').innerText = formatNumber(rent) + " ฿";
-            document.getElementById('label-electric').innerText = formatNumber(electric) + " ฿";
-            document.getElementById('label-water').innerText = formatNumber(water) + " ฿";
+            const staff = parseFloat(document.getElementById('num-staff').value) || 0;
+            const rent = parseFloat(document.getElementById('num-rent').value) || 0;
+            const electric = parseFloat(document.getElementById('num-electric').value) || 0;
+            const water = parseFloat(document.getElementById('num-water').value) || 0;
 
             // Calculations
             const dailyRevenue = bills * ticket;
@@ -446,7 +529,6 @@
             const grossProfit = monthlyRevenue - cogs;
             const royalty = monthlyRevenue * royaltyRate;
             
-            // Total OPEX dynamically calculated
             const totalOpex = staff + rent + electric + water + otherOpexFixed;
             const netProfit = grossProfit - royalty - totalOpex;
             const netMargin = monthlyRevenue > 0 ? (netProfit / monthlyRevenue) * 100 : 0;
@@ -480,7 +562,6 @@
             document.getElementById('table-gross-profit').innerText = formatNumber(grossProfit) + " ฿";
             document.getElementById('table-royalty').innerText = "- " + formatNumber(royalty) + " ฿";
             
-            // OPEX Breakdown table updates
             document.getElementById('table-staff').innerText = formatNumber(staff) + " ฿";
             document.getElementById('table-rent').innerText = formatNumber(rent) + " ฿";
             document.getElementById('table-utilities').innerText = formatNumber(electric + water) + " ฿";
@@ -491,14 +572,14 @@
         }
 
         function resetSliders() {
-            document.getElementById('input-bills').value = 60;
-            document.getElementById('input-ticket').value = 80;
-            document.getElementById('input-cogs').value = 32.09;
-            document.getElementById('input-investment').value = 710000;
-            document.getElementById('input-staff').value = 24000;
-            document.getElementById('input-rent').value = 10000;
-            document.getElementById('input-electric').value = 4000;
-            document.getElementById('input-water').value = 200;
+            setValue('bills', 60);
+            setValue('ticket', 80);
+            setValue('cogs', 32.09);
+            setValue('investment', 710000);
+            setValue('staff', 24000);
+            setValue('rent', 10000);
+            setValue('electric', 4000);
+            setValue('water', 200);
             calculateROI();
         }
 
