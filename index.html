@@ -1,5 +1,53 @@
-<script>
-        // วางลิงก์เว็บแอปตัวล่าสุดของคุณตรงนี้ (ลิงก์เดิมที่ลงท้ายด้วย /exec)
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบบันทึกเวลาทำงาน</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        body { font-family: system-ui, -apple-system, sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-100 min-h-screen flex flex-col items-center justify-center p-4">
+
+    <div class="bg-white rounded-2xl shadow-xl p-6 w-full max-w-md text-center">
+        <h1 class="text-2xl font-bold text-slate-800 mb-2">ลงเวลาทำงาน</h1>
+        <p class="text-sm text-slate-500 mb-6">คลิกปุ่มเข้างานหรือออกงานตามชื่อของคุณ</p>
+
+        <div class="space-y-4" id="staff-list">
+            
+            <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3">
+                <span class="font-semibold text-slate-700 text-lg text-left w-full sm:w-auto">ณัชณิชา</span>
+                <div class="flex gap-2 w-full sm:w-auto">
+                    <button onclick="recordTime('ณัชณิชา', 'เข้างาน')" class="flex-1 sm:flex-none bg-emerald-500 hover:bg-emerald-600 text-white font-medium py-2 px-4 rounded-lg shadow transition-all active:scale-95 text-sm">เข้างาน</button>
+                    <button onclick="recordTime('ณัชณิชา', 'ออกงาน')" class="flex-1 sm:flex-none bg-rose-500 hover:bg-rose-600 text-white font-medium py-2 px-4 rounded-lg shadow transition-all active:scale-95 text-sm">ออกงาน</button>
+                </div>
+            </div>
+
+            <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3">
+                <span class="font-semibold text-slate-700 text-lg text-left w-full sm:w-auto">ศิวกร</span>
+                <div class="flex gap-2 w-full sm:w-auto">
+                    <button onclick="recordTime('ศิวกร', 'เข้างาน')" class="flex-1 sm:flex-none bg-emerald-500 hover:bg-emerald-600 text-white font-medium py-2 px-4 rounded-lg shadow transition-all active:scale-95 text-sm">เข้างาน</button>
+                    <button onclick="recordTime('ศิวกร', 'ออกงาน')" class="flex-1 sm:flex-none bg-rose-500 hover:bg-rose-600 text-white font-medium py-2 px-4 rounded-lg shadow transition-all active:scale-95 text-sm">ออกงาน</button>
+                </div>
+            </div>
+
+            <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3">
+                <span class="font-semibold text-slate-700 text-lg text-left w-full sm:w-auto">นันทวรรณ</span>
+                <div class="flex gap-2 w-full sm:w-auto">
+                    <button onclick="recordTime('นันทวรรณ', 'เข้างาน')" class="flex-1 sm:flex-none bg-emerald-500 hover:bg-emerald-600 text-white font-medium py-2 px-4 rounded-lg shadow transition-all active:scale-95 text-sm">เข้างาน</button>
+                    <button onclick="recordTime('นันทวรรณ', 'ออกงาน')" class="flex-1 sm:flex-none bg-rose-500 hover:bg-rose-600 text-white font-medium py-2 px-4 rounded-lg shadow transition-all active:scale-95 text-sm">ออกงาน</button>
+                </div>
+            </div>
+
+        </div>
+
+        <div id="status-message" class="mt-6 text-sm font-medium hidden"></div>
+    </div>
+
+    <script>
+        // วางลิงก์เว็บแอป Google Sheets ของคุณตรงนี้
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwjVDh3B0pJ5Kme9XPayBv234cEu_Xn5Skwo12q0YxPce0Z1sC3d7x0mCSRBZ8WjWj1fw/exec"; 
 
         function recordTime(name, action) {
@@ -7,7 +55,7 @@
             statusDiv.className = "mt-6 text-sm font-medium text-amber-600 block bg-amber-50 p-3 rounded-lg";
             statusDiv.innerText = `กำลังบันทึกข้อมูลของ คุณ${name}...`;
 
-            // ใช้วิธีแนบข้อมูลไปกับลิงก์ (GET Request) ทะลุกำแพง Google ได้แน่นอน
+            // ส่งข้อมูลแบบ GET เพื่อทะลุระบบป้องกันของ Google
             const finalUrl = `${WEB_APP_URL}?name=${encodeURIComponent(name)}&action=${encodeURIComponent(action)}`;
 
             fetch(finalUrl)
@@ -30,3 +78,5 @@
             });
         }
     </script>
+</body>
+</html>
