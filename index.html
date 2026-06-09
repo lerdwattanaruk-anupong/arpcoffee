@@ -15,10 +15,8 @@
         <h1 class="text-2xl font-bold text-slate-800 mb-2">ลงเวลาทำงาน</h1>
         <p class="text-sm text-slate-500 mb-6">คลิกปุ่มเข้างานหรือออกงานตามชื่อของคุณ</p>
 
-        <!-- รายชื่อพนักงานใหม่ -->
         <div class="space-y-4" id="staff-list">
             
-            <!-- คนที่ 1: ณัชณิชา -->
             <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3">
                 <span class="font-semibold text-slate-700 text-lg text-left w-full sm:w-auto">ณัชณิชา</span>
                 <div class="flex gap-2 w-full sm:w-auto">
@@ -27,7 +25,6 @@
                 </div>
             </div>
 
-            <!-- คนที่ 2: ศิวกร -->
             <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3">
                 <span class="font-semibold text-slate-700 text-lg text-left w-full sm:w-auto">ศิวกร</span>
                 <div class="flex gap-2 w-full sm:w-auto">
@@ -36,7 +33,6 @@
                 </div>
             </div>
 
-            <!-- คนที่ 3: นันทวรรณ -->
             <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3">
                 <span class="font-semibold text-slate-700 text-lg text-left w-full sm:w-auto">นันทวรรณ</span>
                 <div class="flex gap-2 w-full sm:w-auto">
@@ -51,7 +47,7 @@
     </div>
 
     <script>
-        // นำ URL เว็บแอปของ Google มาวางตรงนี้
+        // URL เว็บแอปของ Google Sheets
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzxTupAWAhQ0geCRYlDL5vdJKmsbBzmFwxEgawbhYH_H8h0wUY1wXauGNlzhm9fpxJhQA/exec"; 
 
         function recordTime(name, action) {
@@ -74,10 +70,9 @@
                         longitude: position.coords.longitude
                     };
 
-                    // ปรับรูปแบบการ Fetch เพื่อให้ทำงานร่วมกับ CORS หลังบ้านได้อย่างถูกต้อง หน้าเว็บจะไม่ค้าง
                     fetch(WEB_APP_URL, {
                         method: 'POST',
-                        headers: { 'Content-Type': 'text/plain' }, // ใช้ text/plain เพื่อเลี่ยงการติด CORS Preflight ขั้นรุนแรง
+                        headers: { 'Content-Type': 'text/plain' }, 
                         body: JSON.stringify(data)
                     })
                     .then(response => response.json())
@@ -85,19 +80,24 @@
                         if (res.result === "success") {
                             statusDiv.className = "mt-6 text-sm font-medium text-emerald-600 block bg-emerald-50 p-3 rounded-lg";
                             statusDiv.innerText = `✔️ บันทึก "${action}" ของคุณ${name} เรียบร้อยแล้ว!`;
+                            setTimeout(() => { statusDiv.classList.add('hidden'); }, 5000);
                         } else if (res.result === "invalid_location") {
-                            statusDiv.className = "mt-6 text-sm font-medium text-rose-600 block bg-rose-50 p-3 rounded-lg";
-                            statusDiv.innerText = `❌ บันทึกไม่สำเร็จ: คุณอยู่นอกพื้นที่ร้านตามพิกัดที่กำหนด`;
+                            // ปรับแก้ตรงนี้: แสดงพิกัดจริงที่ดักจับได้ เพื่อให้นำไปแก้ไขหลังบ้านได้ง่ายขึ้น
+                            statusDiv.className = "mt-6 text-sm font-medium text-rose-600 block bg-rose-50 p-3 rounded-lg text-left";
+                            statusDiv.innerHTML = `❌ <b>นอกพิกัดร้าน!</b><br>
+                                                   พิกัดเครื่องคุณคือ: <span class="bg-slate-200 px-1 py-0.5 rounded font-mono select-all">${data.latitude.toFixed(6)}, ${data.longitude.toFixed(6)}</span><br>
+                                                   <span class="text-xs text-slate-500 mt-1 block">กรุณาคัดลอกตัวเลขพิกัดนี้ไปใส่ในโค้ด Google Apps Script หลังบ้าน หรือขยายรัศมีให้กว้างขึ้นครับ</span>`;
                         } else {
                             statusDiv.className = "mt-6 text-sm font-medium text-rose-600 block bg-rose-50 p-3 rounded-lg";
                             statusDiv.innerText = `❌ เกิดข้อผิดพลาดจากระบบหลังบ้าน`;
+                            setTimeout(() => { statusDiv.classList.add('hidden'); }, 5000);
                         }
-                        setTimeout(() => { statusDiv.classList.add('hidden'); }, 5000);
                     })
                     .catch(error => {
                         console.error('Error:', error);
                         statusDiv.className = "mt-6 text-sm font-medium text-rose-600 block bg-rose-50 p-3 rounded-lg";
                         statusDiv.innerText = `❌ ไม่สามารถเชื่อมต่อหลังบ้านได้ (ตรวจสอบการ Deploy)`;
+                        setTimeout(() => { statusDiv.classList.add('hidden'); }, 5000);
                     });
                 },
                 (error) => {
