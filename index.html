@@ -1,53 +1,5 @@
-<!DOCTYPE html>
-<html lang="th">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ระบบบันทึกเวลาทำงาน</title>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <style>
-        body { font-family: system-ui, -apple-system, sans-serif; }
-    </style>
-</head>
-<body class="bg-slate-100 min-h-screen flex flex-col items-center justify-center p-4">
-
-    <div class="bg-white rounded-2xl shadow-xl p-6 w-full max-w-md text-center">
-        <h1 class="text-2xl font-bold text-slate-800 mb-2">ลงเวลาทำงาน</h1>
-        <p class="text-sm text-slate-500 mb-6">คลิกปุ่มเข้างานหรือออกงานตามชื่อของคุณ</p>
-
-        <div class="space-y-4" id="staff-list">
-            
-            <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3">
-                <span class="font-semibold text-slate-700 text-lg text-left w-full sm:w-auto">ณัชณิชา</span>
-                <div class="flex gap-2 w-full sm:w-auto">
-                    <button onclick="recordTime('ณัชณิชา', 'เข้างาน')" class="flex-1 sm:flex-none bg-emerald-500 hover:bg-emerald-600 text-white font-medium py-2 px-4 rounded-lg shadow transition-all active:scale-95 text-sm">เข้างาน</button>
-                    <button onclick="recordTime('ณัชณิชา', 'ออกงาน')" class="flex-1 sm:flex-none bg-rose-500 hover:bg-rose-600 text-white font-medium py-2 px-4 rounded-lg shadow transition-all active:scale-95 text-sm">ออกงาน</button>
-                </div>
-            </div>
-
-            <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3">
-                <span class="font-semibold text-slate-700 text-lg text-left w-full sm:w-auto">ศิวกร</span>
-                <div class="flex gap-2 w-full sm:w-auto">
-                    <button onclick="recordTime('ศิวกร', 'เข้างาน')" class="flex-1 sm:flex-none bg-emerald-500 hover:bg-emerald-600 text-white font-medium py-2 px-4 rounded-lg shadow transition-all active:scale-95 text-sm">เข้างาน</button>
-                    <button onclick="recordTime('ศิวกร', 'ออกงาน')" class="flex-1 sm:flex-none bg-rose-500 hover:bg-rose-600 text-white font-medium py-2 px-4 rounded-lg shadow transition-all active:scale-95 text-sm">ออกงาน</button>
-                </div>
-            </div>
-
-            <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3">
-                <span class="font-semibold text-slate-700 text-lg text-left w-full sm:w-auto">นันทวรรณ</span>
-                <div class="flex gap-2 w-full sm:w-auto">
-                    <button onclick="recordTime('นันทวรรณ', 'เข้างาน')" class="flex-1 sm:flex-none bg-emerald-500 hover:bg-emerald-600 text-white font-medium py-2 px-4 rounded-lg shadow transition-all active:scale-95 text-sm">เข้างาน</button>
-                    <button onclick="recordTime('นันทวรรณ', 'ออกงาน')" class="flex-1 sm:flex-none bg-rose-500 hover:bg-rose-600 text-white font-medium py-2 px-4 rounded-lg shadow transition-all active:scale-95 text-sm">ออกงาน</button>
-                </div>
-            </div>
-
-        </div>
-
-        <div id="status-message" class="mt-6 text-sm font-medium hidden"></div>
-    </div>
-
-    <script>
-        // URL เว็บแอปของ Google Sheets ตัวล่าสุดของคุณ
+<script>
+        // วางลิงก์เว็บแอปตัวล่าสุดของคุณตรงนี้ (ลิงก์เดิมที่ลงท้ายด้วย /exec)
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzxTupAWAhQ0geCRYlDL5vdJKmsbBzmFwxEgawbhYH_H8h0wUY1wXauGNlzhm9fpxJhQA/exec"; 
 
         function recordTime(name, action) {
@@ -55,17 +7,10 @@
             statusDiv.className = "mt-6 text-sm font-medium text-amber-600 block bg-amber-50 p-3 rounded-lg";
             statusDiv.innerText = `กำลังบันทึกข้อมูลของ คุณ${name}...`;
 
-            // ปรับแพ็กเกจข้อมูลให้คลีน ส่งเฉพาะชื่อและการกระทำ (ข้ามการเช็คพิกัดฝั่งบราวเซอร์)
-            const data = {
-                name: name,
-                action: action
-            };
+            // ใช้วิธีแนบข้อมูลไปกับลิงก์ (GET Request) ทะลุกำแพง Google ได้แน่นอน
+            const finalUrl = `${WEB_APP_URL}?name=${encodeURIComponent(name)}&action=${encodeURIComponent(action)}`;
 
-            fetch(WEB_APP_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'text/plain' }, 
-                body: JSON.stringify(data)
-            })
+            fetch(finalUrl)
             .then(response => response.json())
             .then(res => {
                 if (res.result === "success") {
@@ -73,17 +18,15 @@
                     statusDiv.innerText = `✔️ บันทึก "${action}" ของคุณ${name} เรียบร้อยแล้ว!`;
                 } else {
                     statusDiv.className = "mt-6 text-sm font-medium text-rose-600 block bg-rose-50 p-3 rounded-lg";
-                    statusDiv.innerText = `❌ เกิดข้อผิดพลาด: ${res.error || 'ระบบหลังบ้านปฏิเสธการบันทึก'}`;
+                    statusDiv.innerText = `❌ เกิดข้อผิดพลาดจากหลังบ้าน: ${res.error}`;
                 }
                 setTimeout(() => { statusDiv.classList.add('hidden'); }, 5000);
             })
             .catch(error => {
                 console.error('Error:', error);
                 statusDiv.className = "mt-6 text-sm font-medium text-rose-600 block bg-rose-50 p-3 rounded-lg";
-                statusDiv.innerText = `❌ ไม่สามารถเชื่อมต่อหลังบ้านได้ (ตรวจสอบสถานะการ Deploy หรืออินเทอร์เน็ต)`;
+                statusDiv.innerText = `❌ ไม่สามารถเชื่อมต่อกับ Google ได้`;
                 setTimeout(() => { statusDiv.classList.add('hidden'); }, 5000);
             });
         }
     </script>
-</body>
-</html>
