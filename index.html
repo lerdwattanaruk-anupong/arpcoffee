@@ -1,92 +1,57 @@
-<!DOCTYPE html>
-<html lang="th">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ระบบบันทึกเวลาทำงาน</title>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <style>
-        body { font-family: 'Line Seed', 'Helvetica Neue', sans-serif; }
-    </style>
-</head>
-<body class="bg-slate-100 min-h-screen flex flex-col items-center justify-center p-4">
+<script>
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzTd8-7goWkNJZvYDwRCnrDz9AgYfwEOD1OPdIUrie8TBv7M2Icxfuzf8zGqZzP-wkHSA/exec"; // ใส่ลิงก์เดิมของคุณ
 
-    <div class="bg-white rounded-2xl shadow-xl p-6 w-full max-w-md text-center">
-        <h1 class="text-2xl font-bold text-slate-800 mb-2">ลงเวลาทำงาน</h1>
-        <p class="text-sm text-slate-500 mb-6">คลิกปุ่มเข้างานหรือออกงานตามชื่อของคุณ</p>
+    function recordTime(name, action) {
+        const statusDiv = document.getElementById('status-message');
+        
+        statusDiv.className = "mt-6 text-sm font-medium text-amber-600 block";
+        statusDiv.innerText = `กำลังขอพิกัด GPS และบันทึกข้อมูลของ ${name}...`;
 
-        <div class="space-y-4" id="staff-list">
-            
-            <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3">
-                <span class="font-semibold text-slate-700 text-lg text-left w-full sm:w-auto">พนักงาน A</span>
-                <div class="flex gap-2 w-full sm:w-auto">
-                    <button onclick="recordTime('พนักงาน A', 'เข้างาน')" class="flex-1 sm:flex-none bg-emerald-500 hover:bg-emerald-600 text-white font-medium py-2 px-4 rounded-lg shadow transition-all active:scale-95 text-sm">เข้างาน</button>
-                    <button onclick="recordTime('พนักงาน A', 'ออกงาน')" class="flex-1 sm:flex-none bg-rose-500 hover:bg-rose-600 text-white font-medium py-2 px-4 rounded-lg shadow transition-all active:scale-95 text-sm">ออกงาน</button>
-                </div>
-            </div>
-
-            <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3">
-                <span class="font-semibold text-slate-700 text-lg text-left w-full sm:w-auto">พนักงาน B</span>
-                <div class="flex gap-2 w-full sm:w-auto">
-                    <button onclick="recordTime('พนักงาน B', 'เข้างาน')" class="flex-1 sm:flex-none bg-emerald-500 hover:bg-emerald-600 text-white font-medium py-2 px-4 rounded-lg shadow transition-all active:scale-95 text-sm">เข้างาน</button>
-                    <button onclick="recordTime('พนักงาน B', 'ออกงาน')" class="flex-1 sm:flex-none bg-rose-500 hover:bg-rose-600 text-white font-medium py-2 px-4 rounded-lg shadow transition-all active:scale-95 text-sm">ออกงาน</button>
-                </div>
-            </div>
-
-            <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3">
-                <span class="font-semibold text-slate-700 text-lg text-left w-full sm:w-auto">พนักงาน C</span>
-                <div class="flex gap-2 w-full sm:w-auto">
-                    <button onclick="recordTime('พนักงาน C', 'เข้างาน')" class="flex-1 sm:flex-none bg-emerald-500 hover:bg-emerald-600 text-white font-medium py-2 px-4 rounded-lg shadow transition-all active:scale-95 text-sm">เข้างาน</button>
-                    <button onclick="recordTime('พนักงาน C', 'ออกงาน')" class="flex-1 sm:flex-none bg-rose-500 hover:bg-rose-600 text-white font-medium py-2 px-4 rounded-lg shadow transition-all active:scale-95 text-sm">ออกงาน</button>
-                </div>
-            </div>
-
-        </div>
-
-        <div id="status-message" class="mt-6 text-sm font-medium hidden"></div>
-    </div>
-
-    <script>
-        // สำคัญ: วาง URL ของ Google Web App ที่ได้จากขั้นตอนที่ 1 ตรงนี้
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzTd8-7goWkNJZvYDwRCnrDz9AgYfwEOD1OPdIUrie8TBv7M2Icxfuzf8zGqZzP-wkHSA/exec"; 
-
-        function recordTime(name, action) {
-            const statusDiv = document.getElementById('status-message');
-            
-            // แสดงสถานะกำลังโหลด
-            statusDiv.className = "mt-6 text-sm font-medium text-amber-600 block";
-            statusDiv.innerText = `กำลังบันทึกข้อมูลของ ${name}...`;
-
-            // ข้อมูลที่จะส่งไปที่ Google Sheet
-            const data = {
-                name: name,
-                action: action
-            };
-
-            // ส่งข้อมูลด้วย Fetch API
-            fetch(WEB_APP_URL, {
-                method: 'POST',
-                mode: 'no-cors', // ใช้ no-cors เพื่อให้สามารถส่งข้ามโดเมนไปยัง Google Apps Script ได้ง่าย
-                cache: 'no-cache',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data)
-            })
-            .then(() => {
-                // เนื่องจากใช้ no-cors จะไม่สามารถอ่าน response สำเร็จได้โดยตรง แต่ปกติถ้าไม่ error คือส่งผ่าน
-                statusDiv.className = "mt-6 text-sm font-medium text-emerald-600 block bg-emerald-50 p-3 rounded-lg";
-                statusDiv.innerText = `✔️ บันทึก "${action}" ของ ${name} เรียบร้อยแล้ว!`;
-                
-                // ซ่อนข้อความหลังจาก 4 วินาที
-                setTimeout(() => { statusDiv.classList.add('hidden'); }, 4000);
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                statusDiv.className = "mt-6 text-sm font-medium text-rose-600 block bg-rose-50 p-3 rounded-lg";
-                statusDiv.innerText = `❌ เกิดข้อผิดพลาด ไม่สามารถบันทึกได้`;
-            });
+        // ตรวจสอบว่าเครื่องรองรับการค้นหาพิกัดไหม
+        if (!navigator.geolocation) {
+            statusDiv.className = "mt-6 text-sm font-medium text-rose-600 block bg-rose-50 p-3 rounded-lg";
+            statusDiv.innerText = "❌ เบราว์เซอร์ของคุณไม่รองรับการเช็คพิกัด GPS";
+            return;
         }
-    </script>
-</body>
-</html>
+
+        // เรียกเปิด GPS บนมือถือพนักงาน
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const userLat = position.coords.latitude;
+                const userLng = position.coords.longitude;
+
+                // แพ็คข้อมูลส่งไปหลังบ้าน
+                const data = {
+                    name: name,
+                    action: action,
+                    latitude: userLat,
+                    longitude: userLng
+                };
+
+                fetch(WEB_APP_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    cache: 'no-cache',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                })
+                .then(() => {
+                    statusDiv.className = "mt-6 text-sm font-medium text-emerald-600 block bg-emerald-50 p-3 rounded-lg";
+                    statusDiv.innerText = `✔️ ส่งข้อมูลของ ${name} เรียบร้อยแล้ว! (ระบบตรวจสอบพิกัดอัตโนมัติ)`;
+                    setTimeout(() => { statusDiv.classList.add('hidden'); }, 4000);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    statusDiv.className = "mt-6 text-sm font-medium text-rose-600 block bg-rose-50 p-3 rounded-lg";
+                    statusDiv.innerText = `❌ เกิดข้อผิดพลาดทางระบบ`;
+                });
+            },
+            (error) => {
+                // กรณีพนักงานกดปฏิเสธไม่ยอมแชร์พิกัด GPS
+                statusDiv.className = "mt-6 text-sm font-medium text-rose-600 block bg-rose-50 p-3 rounded-lg";
+                statusDiv.innerText = "❌ บันทึกไม่สำเร็จ: กรุณากด 'อนุญาตให้เข้าถึงตำแหน่ง' (GPS) ก่อนใช้งาน";
+            },
+            { enableHighAccuracy: true, timeout: 10000 } // ตั้งค่าให้ใช้ GPS ความแม่นยำสูง
+        );
+    }
+</script>
