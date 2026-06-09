@@ -1,371 +1,49 @@
-<!DOCTYPE html>
-<html lang="th">
-<head>
-  <base target="_top">
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ARP COFFEE Attendance</title>
-  <style>
-    :root {
-      --orange: #E4572E;
-      --black: #1A1A1A;
-      --cream: #FFF7EE;
-      --muted: #6B625C;
-      --line: #E8D8CC;
-      --green: #16803C;
-      --red: #B42318;
+<script>
+  const employeeSelect = document.getElementById("employee");
+  const statusBox = document.getElementById("status");
+  const buttons = document.querySelectorAll("button");
+  const modeBadge = document.getElementById("modeBadge");
+  const hintText = document.getElementById("hintText");
+
+  const employees = [
+    "ณัชณิชา",
+    "ศิวกร",
+    "นันทวรรณ"
+  ];
+
+  let appConfig = {
+    enforceLocation: false,
+    employees: employees
+  };
+
+  function setStatus(type, message) {
+    statusBox.className = "status show " + type;
+    statusBox.innerHTML = message;
+  }
+
+  function setLoading(isLoading) {
+    buttons.forEach(btn => btn.disabled = isLoading);
+  }
+
+  function loadConfig() {
+    employees.forEach(name => {
+      const option = document.createElement("option");
+      option.value = name;
+      option.textContent = name;
+      employeeSelect.appendChild(option);
+    });
+  }
+
+  function submitForm(action) {
+    const employee = employeeSelect.value;
+
+    if (!employee) {
+      setStatus("error", "กรุณาเลือกชื่อพนักงานก่อน");
+      return;
     }
 
-    * { box-sizing: border-box; }
+    setStatus("success", `ทดสอบสำเร็จ: ${employee} กด${action}`);
+  }
 
-    body {
-      margin: 0;
-      min-height: 100vh;
-      font-family: Arial, "Noto Sans Thai", sans-serif;
-      background:
-        radial-gradient(circle at top left, rgba(228,87,46,.16), transparent 30%),
-        linear-gradient(135deg, #fffaf5, #f7efe7);
-      color: var(--black);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
-
-    .card {
-      width: 100%;
-      max-width: 460px;
-      background: rgba(255,255,255,.94);
-      border: 1px solid var(--line);
-      border-radius: 24px;
-      box-shadow: 0 20px 60px rgba(26,26,26,.12);
-      overflow: hidden;
-    }
-
-    .header {
-      background: var(--black);
-      color: white;
-      padding: 24px 22px;
-    }
-
-    .brand {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      font-weight: 800;
-      letter-spacing: .05em;
-      font-size: 21px;
-    }
-
-    .brand-mark {
-      width: 34px;
-      height: 34px;
-      border-radius: 50%;
-      background: var(--orange);
-      display: grid;
-      place-items: center;
-      font-size: 13px;
-      font-weight: 900;
-    }
-
-    .subtitle {
-      margin-top: 8px;
-      color: #f3d9ca;
-      font-size: 14px;
-    }
-
-    .content { padding: 22px; }
-
-    label {
-      display: block;
-      font-size: 14px;
-      color: var(--muted);
-      margin-bottom: 8px;
-      font-weight: 700;
-    }
-
-    select {
-      width: 100%;
-      padding: 15px 14px;
-      border-radius: 14px;
-      border: 1px solid var(--line);
-      background: white;
-      font-size: 18px;
-      outline: none;
-      margin-bottom: 16px;
-    }
-
-    .hint {
-      background: var(--cream);
-      border: 1px dashed #e0bba5;
-      color: #6b4332;
-      padding: 12px 14px;
-      border-radius: 14px;
-      font-size: 14px;
-      line-height: 1.45;
-      margin-bottom: 16px;
-    }
-
-    .mode {
-      display: inline-block;
-      background: #fff3df;
-      border: 1px solid #f0c47b;
-      color: #7a4b00;
-      padding: 7px 10px;
-      border-radius: 999px;
-      font-size: 13px;
-      font-weight: 700;
-      margin-bottom: 14px;
-    }
-
-    .buttons {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-top: 10px;
-    }
-
-    button {
-      border: 0;
-      border-radius: 16px;
-      padding: 17px 12px;
-      font-size: 18px;
-      font-weight: 800;
-      cursor: pointer;
-      transition: transform .12s ease, opacity .12s ease;
-    }
-
-    button:active { transform: scale(.98); }
-    button:disabled { opacity: .55; cursor: not-allowed; }
-
-    .in { background: var(--orange); color: white; }
-    .out { background: var(--black); color: white; }
-
-    .status {
-      margin-top: 16px;
-      min-height: 54px;
-      border-radius: 16px;
-      padding: 14px;
-      display: none;
-      line-height: 1.45;
-      font-size: 15px;
-    }
-
-    .status.show { display: block; }
-    .status.loading {
-      background: #fff3df;
-      color: #6d4300;
-      border: 1px solid #f0c47b;
-    }
-    .status.success {
-      background: #ecfdf3;
-      color: var(--green);
-      border: 1px solid #b7efc5;
-    }
-    .status.error {
-      background: #fff1f0;
-      color: var(--red);
-      border: 1px solid #ffccc7;
-    }
-
-    .footer {
-      padding: 0 22px 22px;
-      color: var(--muted);
-      font-size: 12px;
-      text-align: center;
-    }
-  </style>
-</head>
-
-<body>
-  <main class="card">
-    <section class="header">
-      <div class="brand">
-        <div class="brand-mark">ARP</div>
-        ARP COFFEE
-      </div>
-      <div class="subtitle">Employee Attendance System</div>
-    </section>
-
-    <section class="content">
-      <div id="modeBadge" class="mode">โหมดทดสอบ: ยังไม่ล็อกพิกัดร้าน</div>
-
-      <label for="employee">เลือกชื่อพนักงาน</label>
-      <select id="employee">
-        <option value="">-- กรุณาเลือกชื่อ --</option>
-      </select>
-
-      <div class="hint" id="hintText">
-        เวอร์ชันนี้ใช้ทดสอบก่อน ระบบจะบันทึกลง Google Sheet ได้ทันที แม้ยังไม่ได้ใส่พิกัดร้าน
-      </div>
-
-      <div class="buttons">
-        <button class="in" onclick="submitForm('เข้างาน')">เข้างาน</button>
-        <button class="out" onclick="submitForm('ออกงาน')">ออกงาน</button>
-      </div>
-
-      <div id="status" class="status"></div>
-    </section>
-
-    <div class="footer">
-      ใช้สำหรับบันทึกเวลาเข้างาน-ออกงาน และสรุปจำนวนวันทำงานรายเดือน
-    </div>
-  </main>
-
-  <script>
-    const employeeSelect = document.getElementById("employee");
-    const statusBox = document.getElementById("status");
-    const buttons = document.querySelectorAll("button");
-    const modeBadge = document.getElementById("modeBadge");
-    const hintText = document.getElementById("hintText");
-
-    let appConfig = {
-      enforceLocation: false,
-      employees: []
-    };
-
-    function setStatus(type, message) {
-      statusBox.className = "status show " + type;
-      statusBox.innerHTML = message;
-    }
-
-    function setLoading(isLoading) {
-      buttons.forEach(btn => btn.disabled = isLoading);
-    }
-
-    function loadConfig() {
-      google.script.run
-        .withSuccessHandler(config => {
-          appConfig = config;
-
-          config.employees.forEach(name => {
-            const option = document.createElement("option");
-            option.value = name;
-            option.textContent = name;
-            employeeSelect.appendChild(option);
-          });
-
-          if (config.enforceLocation) {
-            modeBadge.textContent = "โหมดใช้งานจริง: ล็อกพิกัดไม่เกิน " + config.maxDistanceMeters + " เมตร";
-            hintText.textContent = "ระบบจะตรวจสอบพิกัดและอนุมัติเฉพาะเมื่ออยู่ในระยะที่กำหนด";
-          }
-        })
-        .withFailureHandler(err => {
-          setStatus("error", err.message || "โหลดข้อมูลไม่สำเร็จ");
-        })
-        .getAppConfig();
-    }
-
-    function submitForm(action) {
-      const employee = employeeSelect.value;
-
-      if (!employee) {
-        setStatus("error", "กรุณาเลือกชื่อพนักงานก่อน");
-        return;
-      }
-
-      setLoading(true);
-
-      // ถ้าเปิดล็อกพิกัดจริง ต้องขอ Location
-      if (appConfig.enforceLocation) {
-        requestLocationAndSubmit(employee, action);
-        return;
-      }
-
-      // โหมดทดสอบ: พยายามขอพิกัด แต่ถ้าไม่ได้ก็ยังบันทึกได้
-      setStatus("loading", "กำลังบันทึกข้อมูล...");
-
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          position => {
-            submitToSheet(employee, action, {
-              lat: position.coords.latitude,
-              lng: position.coords.longitude,
-              accuracy: position.coords.accuracy
-            });
-          },
-          () => {
-            submitToSheet(employee, action, {
-              lat: "",
-              lng: "",
-              accuracy: ""
-            });
-          },
-          {
-            enableHighAccuracy: true,
-            timeout: 5000,
-            maximumAge: 0
-          }
-        );
-      } else {
-        submitToSheet(employee, action, {
-          lat: "",
-          lng: "",
-          accuracy: ""
-        });
-      }
-    }
-
-    function requestLocationAndSubmit(employee, action) {
-      if (!navigator.geolocation) {
-        setLoading(false);
-        setStatus("error", "อุปกรณ์นี้ไม่รองรับการตรวจพิกัด");
-        return;
-      }
-
-      setStatus("loading", "กำลังตรวจสอบพิกัด กรุณาอนุญาต Location...");
-
-      navigator.geolocation.getCurrentPosition(
-        position => {
-          submitToSheet(employee, action, {
-            lat: position.coords.latitude,
-            lng: position.coords.longitude,
-            accuracy: position.coords.accuracy
-          });
-        },
-        error => {
-          setLoading(false);
-          let message = "ไม่สามารถอ่านพิกัดได้";
-          if (error.code === 1) message = "กรุณาอนุญาตให้เว็บไซต์เข้าถึง Location";
-          if (error.code === 2) message = "อุปกรณ์หาพิกัดไม่ได้ กรุณาเปิด GPS/Wi‑Fi";
-          if (error.code === 3) message = "การขอพิกัดใช้เวลานานเกินไป กรุณาลองใหม่";
-          setStatus("error", message);
-        },
-        {
-          enableHighAccuracy: true,
-          timeout: 15000,
-          maximumAge: 0
-        }
-      );
-    }
-
-    function submitToSheet(employee, action, location) {
-      const payload = {
-        employee,
-        action,
-        lat: location.lat,
-        lng: location.lng,
-        accuracy: location.accuracy,
-        userAgent: navigator.userAgent
-      };
-
-      google.script.run
-        .withSuccessHandler(result => {
-          setLoading(false);
-          if (result.ok) {
-            setStatus("success", result.message + "<br>สถานะ: " + result.status);
-          } else {
-            setStatus("error", result.message + "<br>สถานะ: " + result.status);
-          }
-        })
-        .withFailureHandler(err => {
-          setLoading(false);
-          setStatus("error", err.message || "บันทึกไม่สำเร็จ");
-        })
-        .submitAttendance(payload);
-    }
-
-    window.onload = loadConfig;
-  </script>
-</body>
-</html>
+  window.onload = loadConfig;
+</script>
