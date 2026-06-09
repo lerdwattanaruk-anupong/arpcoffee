@@ -47,65 +47,42 @@
     </div>
 
     <script>
-        // URL เว็บแอปของ Google Sheets
+        // URL เว็บแอปของ Google Sheets ตัวล่าสุดของคุณ
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzxTupAWAhQ0geCRYlDL5vdJKmsbBzmFwxEgawbhYH_H8h0wUY1wXauGNlzhm9fpxJhQA/exec"; 
 
         function recordTime(name, action) {
             const statusDiv = document.getElementById('status-message');
             statusDiv.className = "mt-6 text-sm font-medium text-amber-600 block bg-amber-50 p-3 rounded-lg";
-            statusDiv.innerText = `กำลังตรวจสอบพิกัด GPS และบันทึกข้อมูล...`;
+            statusDiv.innerText = `กำลังบันทึกข้อมูลของ คุณ${name}...`;
 
-            if (!navigator.geolocation) {
-                statusDiv.className = "mt-6 text-sm font-medium text-rose-600 block bg-rose-50 p-3 rounded-lg";
-                statusDiv.innerText = "❌ เบราว์เซอร์ไม่รองรับระบบ GPS";
-                return;
-            }
+            // ปรับแพ็กเกจข้อมูลให้คลีน ส่งเฉพาะชื่อและการกระทำ (ข้ามการเช็คพิกัดฝั่งบราวเซอร์)
+            const data = {
+                name: name,
+                action: action
+            };
 
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    const data = {
-                        name: name,
-                        action: action,
-                        latitude: position.coords.latitude,
-                        longitude: position.coords.longitude
-                    };
-
-                    fetch(WEB_APP_URL, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'text/plain' }, 
-                        body: JSON.stringify(data)
-                    })
-                    .then(response => response.json())
-                    .then(res => {
-                        if (res.result === "success") {
-                            statusDiv.className = "mt-6 text-sm font-medium text-emerald-600 block bg-emerald-50 p-3 rounded-lg";
-                            statusDiv.innerText = `✔️ บันทึก "${action}" ของคุณ${name} เรียบร้อยแล้ว!`;
-                            setTimeout(() => { statusDiv.classList.add('hidden'); }, 5000);
-                        } else if (res.result === "invalid_location") {
-                            // ปรับแก้ตรงนี้: แสดงพิกัดจริงที่ดักจับได้ เพื่อให้นำไปแก้ไขหลังบ้านได้ง่ายขึ้น
-                            statusDiv.className = "mt-6 text-sm font-medium text-rose-600 block bg-rose-50 p-3 rounded-lg text-left";
-                            statusDiv.innerHTML = `❌ <b>นอกพิกัดร้าน!</b><br>
-                                                   พิกัดเครื่องคุณคือ: <span class="bg-slate-200 px-1 py-0.5 rounded font-mono select-all">${data.latitude.toFixed(6)}, ${data.longitude.toFixed(6)}</span><br>
-                                                   <span class="text-xs text-slate-500 mt-1 block">กรุณาคัดลอกตัวเลขพิกัดนี้ไปใส่ในโค้ด Google Apps Script หลังบ้าน หรือขยายรัศมีให้กว้างขึ้นครับ</span>`;
-                        } else {
-                            statusDiv.className = "mt-6 text-sm font-medium text-rose-600 block bg-rose-50 p-3 rounded-lg";
-                            statusDiv.innerText = `❌ เกิดข้อผิดพลาดจากระบบหลังบ้าน`;
-                            setTimeout(() => { statusDiv.classList.add('hidden'); }, 5000);
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        statusDiv.className = "mt-6 text-sm font-medium text-rose-600 block bg-rose-50 p-3 rounded-lg";
-                        statusDiv.innerText = `❌ ไม่สามารถเชื่อมต่อหลังบ้านได้ (ตรวจสอบการ Deploy)`;
-                        setTimeout(() => { statusDiv.classList.add('hidden'); }, 5000);
-                    });
-                },
-                (error) => {
+            fetch(WEB_APP_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain' }, 
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(res => {
+                if (res.result === "success") {
+                    statusDiv.className = "mt-6 text-sm font-medium text-emerald-600 block bg-emerald-50 p-3 rounded-lg";
+                    statusDiv.innerText = `✔️ บันทึก "${action}" ของคุณ${name} เรียบร้อยแล้ว!`;
+                } else {
                     statusDiv.className = "mt-6 text-sm font-medium text-rose-600 block bg-rose-50 p-3 rounded-lg";
-                    statusDiv.innerText = "❌ บันทึกไม่สำเร็จ: กรุณากดปุ่ม 'อนุญาตแชร์ตำแหน่งพิกัด (GPS)' บนมือถือ";
-                },
-                { enableHighAccuracy: true, timeout: 10000 }
-            );
+                    statusDiv.innerText = `❌ เกิดข้อผิดพลาด: ${res.error || 'ระบบหลังบ้านปฏิเสธการบันทึก'}`;
+                }
+                setTimeout(() => { statusDiv.classList.add('hidden'); }, 5000);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                statusDiv.className = "mt-6 text-sm font-medium text-rose-600 block bg-rose-50 p-3 rounded-lg";
+                statusDiv.innerText = `❌ ไม่สามารถเชื่อมต่อหลังบ้านได้ (ตรวจสอบสถานะการ Deploy หรืออินเทอร์เน็ต)`;
+                setTimeout(() => { statusDiv.classList.add('hidden'); }, 5000);
+            });
         }
     </script>
 </body>
