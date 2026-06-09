@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ARP COFFEE Attendance</title>
+
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, sans-serif;
+      background: #fff7ee;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 430px;
+      background: white;
+      border-radius: 22px;
+      box-shadow: 0 18px 50px rgba(0,0,0,.12);
+      overflow: hidden;
+    }
+
+    .header {
+      background: #1A1A1A;
+      color: white;
+      padding: 24px;
+    }
+
+    .brand {
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: .04em;
+    }
+
+    .subtitle {
+      color: #f3d9ca;
+      margin-top: 8px;
+      font-size: 14px;
+    }
+
+    .content {
+      padding: 24px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 700;
+      color: #6B625C;
+    }
+
+    select {
+      width: 100%;
+      padding: 14px;
+      border-radius: 14px;
+      border: 1px solid #e8d8cc;
+      font-size: 18px;
+      margin-bottom: 16px;
+      background: white;
+    }
+
+    .hint {
+      background: #fff7ee;
+      border: 1px dashed #e0bba5;
+      color: #6b4332;
+      padding: 12px;
+      border-radius: 14px;
+      font-size: 14px;
+      margin-bottom: 18px;
+      line-height: 1.5;
+    }
+
+    .buttons {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 16px;
+      padding: 16px 10px;
+      font-size: 18px;
+      font-weight: 800;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      opacity: .55;
+      cursor: not-allowed;
+    }
+
+    .in {
+      background: #E4572E;
+    }
+
+    .out {
+      background: #1A1A1A;
+    }
+
+    .status {
+      margin-top: 16px;
+      display: none;
+      padding: 14px;
+      border-radius: 14px;
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    .status.show {
+      display: block;
+    }
+
+    .loading {
+      background: #fff3df;
+      color: #7a4b00;
+      border: 1px solid #f0c47b;
+    }
+
+    .success {
+      background: #ecfdf3;
+      color: #16803c;
+      border: 1px solid #b7efc5;
+    }
+
+    .error {
+      background: #fff1f0;
+      color: #b42318;
+      border: 1px solid #ffccc7;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="card">
+    <div class="header">
+      <div class="brand">ARP COFFEE</div>
+      <div class="subtitle">Employee Attendance System</div>
+    </div>
+
+    <div class="content">
+      <label for="employee">เลือกชื่อพนักงาน</label>
+
+      <select id="employee">
+        <option value="">-- กรุณาเลือกชื่อ --</option>
+      </select>
+
+      <div class="hint">
+        ระบบจะบันทึกเวลาจริงลง Google Sheet<br>
+        เวอร์ชันนี้ยังไม่ล็อกพิกัดร้าน แต่จะเก็บพิกัดอุปกรณ์ไว้ถ้าอนุญาต Location
+      </div>
+
+      <div class="buttons">
+        <button class="in" onclick="submitForm('เข้างาน')">เข้างาน</button>
+        <button class="out" onclick="submitForm('ออกงาน')">ออกงาน</button>
+      </div>
+
+      <div id="status" class="status"></div>
+    </div>
+  </div>
+
+  <script>
+    // 1) เอา URL จาก Google Apps Script Web App มาใส่ตรงนี้
+    const SCRIPT_URL = "PASTE_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE";
+
+    const employeeSelect = document.getElementById("employee");
+    const statusBox = document.getElementById("status");
+    const buttons = document.querySelectorAll("button");
+
+    const employees = [
+      "ณัชณิชา",
+      "ศิวกร",
+      "นันทวรรณ"
+    ];
+
+    function loadConfig() {
+      employees.forEach(name => {
+        const option = document.createElement("option");
+        option.value = name;
+        option.textContent = name;
+        employeeSelect.appendChild(option);
+      });
+    }
+
+    function setStatus(type, message) {
+      statusBox.className = "status show " + type;
+      statusBox.innerHTML = message;
+    }
+
+    function setLoading(isLoading) {
+      buttons.forEach(button => button.disabled = isLoading);
+    }
+
+    function submitForm(action) {
+      const employee = employeeSelect.value;
+
+      if (!employee) {
+        setStatus("error", "กรุณาเลือกชื่อพนักงานก่อน");
+        return;
+      }
+
+      if (SCRIPT_URL === "PASTE_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE") {
+        setStatus("error", "ยังไม่ได้ใส่ Google Apps Script Web App URL ในไฟล์ index.html");
+        return;
+      }
+
+      setLoading(true);
+      setStatus("loading", "กำลังบันทึกข้อมูล...");
+
+      // โหมดนี้พยายามเก็บพิกัด แต่ถ้าผู้ใช้ไม่อนุญาต ก็ยังบันทึกเวลาได้
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          position => {
+            sendToGoogleSheet({
+              employee,
+              action,
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude,
+              accuracy: position.coords.accuracy
+            });
+          },
+          () => {
+            sendToGoogleSheet({
+              employee,
+              action,
+              latitude: "",
+              longitude: "",
+              accuracy: ""
+            });
+          },
+          {
+            enableHighAccuracy: true,
+            timeout: 5000,
+            maximumAge: 0
+          }
+        );
+      } else {
+        sendToGoogleSheet({
+          employee,
+          action,
+          latitude: "",
+          longitude: "",
+          accuracy: ""
+        });
+      }
+    }
+
+    function sendToGoogleSheet(data) {
+      const payload = {
+        employee: data.employee,
+        action: data.action,
+        latitude: data.latitude,
+        longitude: data.longitude,
+        accuracy: data.accuracy,
+        userAgent: navigator.userAgent
+      };
+
+      fetch(SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: {
+          "Content-Type": "text/plain;charset=utf-8"
+        },
+        body: JSON.stringify(payload)
+      })
+      .then(() => {
+        setLoading(false);
+        setStatus(
+          "success",
+          data.employee + " บันทึก" + data.action + "สำเร็จ<br>กรุณาตรวจสอบข้อมูลใน Google Sheet"
+        );
+      })
+      .catch(error => {
+        setLoading(false);
+        setStatus("error", "บันทึกไม่สำเร็จ: " + error.message);
+      });
+    }
+
+    window.onload = loadConfig;
+  </script>
+</body>
+</html>
