@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ARP COFFEE Attendance</title>
 
-  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600;700;800&family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -28,10 +27,7 @@
       --loading-bg: #FFF3DF;
       --loading-text: #7A4B00;
       --loading-border: #F0C47B;
-      --shadow: 0 20px 60px rgba(47, 36, 31, 0.14);
-      --radius-xl: 26px;
-      --radius-lg: 18px;
-      --radius-md: 14px;
+      --shadow: 0 26px 80px rgba(47, 36, 31, 0.18);
     }
 
     * {
@@ -44,219 +40,271 @@
       font-family: "Prompt", sans-serif;
       color: var(--espresso);
       background:
-        radial-gradient(circle at top left, rgba(228, 87, 46, 0.18), transparent 25%),
-        radial-gradient(circle at bottom right, rgba(180, 76, 46, 0.15), transparent 25%),
-        linear-gradient(135deg, #fcf8f2 0%, #f7f1e9 100%);
+        radial-gradient(circle at 15% 8%, rgba(228, 87, 46, 0.22), transparent 28%),
+        radial-gradient(circle at 85% 92%, rgba(180, 76, 46, 0.18), transparent 30%),
+        linear-gradient(135deg, #fffaf4 0%, #f3e9dc 100%);
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 24px;
+      padding: 22px;
     }
 
     .page {
       width: 100%;
-      max-width: 480px;
-      position: relative;
+      max-width: 500px;
     }
 
     .card {
       position: relative;
       overflow: hidden;
-      background: rgba(255,255,255,0.94);
-      border: 1px solid rgba(180, 76, 46, 0.12);
-      border-radius: var(--radius-xl);
+      background: rgba(255, 255, 255, 0.96);
+      border: 1px solid rgba(180, 76, 46, 0.14);
+      border-radius: 30px;
       box-shadow: var(--shadow);
-      backdrop-filter: blur(6px);
+      backdrop-filter: blur(10px);
     }
 
-    .top-pattern {
+    .network-bg {
       position: absolute;
-      inset: 0 0 auto 0;
-      height: 180px;
+      inset: 0;
       pointer-events: none;
-      opacity: 0.22;
+      opacity: 0.08;
+      z-index: 0;
     }
 
     .header {
       position: relative;
-      padding: 28px 24px 20px;
+      z-index: 1;
+      padding: 30px 24px 26px;
       background:
-        linear-gradient(135deg, rgba(47,36,31,1) 0%, rgba(58,41,32,1) 55%, rgba(70,52,42,1) 100%);
-      color: var(--white);
-    }
-
-    .brand-row {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      position: relative;
-      z-index: 2;
-    }
-
-    .brand-mark {
-      width: 54px;
-      height: 54px;
-      border-radius: 16px;
-      background: linear-gradient(135deg, var(--arp-orange), var(--terracotta));
+        linear-gradient(145deg, rgba(47,36,31,1) 0%, rgba(39,29,25,1) 55%, rgba(74,49,39,1) 100%);
       color: white;
+      text-align: center;
+    }
+
+    .header::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: -34px;
+      transform: translateX(-50%);
+      width: 120px;
+      height: 68px;
+      background: var(--arp-orange);
+      opacity: 0.16;
+      filter: blur(24px);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .logo-box {
+      width: 116px;
+      height: 116px;
+      margin: 0 auto 14px;
+      border-radius: 28px;
+      background: rgba(255,255,255,0.96);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-family: "Kanit", sans-serif;
-      font-size: 22px;
-      font-weight: 800;
-      letter-spacing: 0.02em;
-      box-shadow: 0 10px 24px rgba(228, 87, 46, 0.28);
-      flex-shrink: 0;
+      box-shadow: 0 18px 36px rgba(0,0,0,0.18);
+      padding: 16px;
     }
 
-    .brand-text h1 {
+    .logo-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+
+    .brand-title {
       margin: 0;
       font-family: "Kanit", sans-serif;
-      font-size: 24px;
+      font-size: 28px;
       font-weight: 800;
+      letter-spacing: 0.12em;
       line-height: 1.1;
-      letter-spacing: 0.02em;
     }
 
-    .brand-text p {
-      margin: 4px 0 0;
+    .brand-subtitle {
+      margin: 8px 0 0;
       font-size: 13px;
-      color: rgba(255,255,255,0.82);
-      line-height: 1.4;
+      color: rgba(255,255,255,0.78);
+      letter-spacing: 0.02em;
     }
 
     .tagline {
-      position: relative;
-      z-index: 2;
       margin-top: 16px;
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      padding: 8px 12px;
+      padding: 8px 13px;
       border-radius: 999px;
       background: rgba(255,255,255,0.10);
-      border: 1px solid rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.14);
       font-size: 12px;
-      color: rgba(255,255,255,0.88);
+      color: rgba(255,255,255,0.86);
+    }
+
+    .tagline .pulse {
+      width: 8px;
+      height: 8px;
+      background: var(--arp-orange);
+      border-radius: 50%;
+      box-shadow: 0 0 0 5px rgba(228,87,46,0.20);
     }
 
     .content {
       position: relative;
-      padding: 24px;
+      z-index: 1;
+      padding: 28px 24px 24px;
     }
 
     .panel {
-      background: linear-gradient(180deg, rgba(247,244,238,0.72), rgba(255,255,255,0.85));
-      border: 1px solid rgba(180, 76, 46, 0.14);
-      border-radius: 20px;
-      padding: 18px;
-      margin-bottom: 18px;
       position: relative;
       overflow: hidden;
+      background:
+        linear-gradient(180deg, rgba(247,244,238,0.82), rgba(255,255,255,0.96));
+      border: 1px solid rgba(180, 76, 46, 0.16);
+      border-radius: 24px;
+      padding: 20px;
+    }
+
+    .panel::before {
+      content: "";
+      position: absolute;
+      right: -42px;
+      top: -42px;
+      width: 130px;
+      height: 130px;
+      border-radius: 50%;
+      border: 1px solid rgba(228,87,46,0.16);
     }
 
     .panel::after {
       content: "";
       position: absolute;
-      right: -20px;
-      bottom: -20px;
-      width: 120px;
-      height: 120px;
-      background: radial-gradient(circle, rgba(228,87,46,0.10), transparent 65%);
-      pointer-events: none;
+      right: 24px;
+      top: 28px;
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(228,87,46,0.18), transparent 68%);
     }
 
     .section-title {
       display: flex;
       align-items: center;
-      gap: 10px;
-      margin-bottom: 14px;
+      gap: 11px;
+      margin-bottom: 16px;
+      position: relative;
+      z-index: 1;
     }
 
-    .section-title .dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: var(--arp-orange);
-      box-shadow: 0 0 0 4px rgba(228, 87, 46, 0.15);
+    .section-title .icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--arp-orange), var(--terracotta));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-family: "Kanit", sans-serif;
+      font-weight: 800;
+      box-shadow: 0 10px 22px rgba(228,87,46,0.22);
       flex-shrink: 0;
     }
 
     .section-title h2 {
       margin: 0;
       font-family: "Kanit", sans-serif;
-      font-size: 18px;
+      font-size: 21px;
       font-weight: 700;
       color: var(--espresso);
+    }
+
+    .section-title p {
+      margin: 2px 0 0;
+      font-size: 12px;
+      color: #8A7667;
     }
 
     .label {
       display: block;
-      margin-bottom: 8px;
+      margin: 16px 0 8px;
       color: #6A5A4D;
       font-size: 14px;
       font-weight: 600;
+      position: relative;
+      z-index: 1;
     }
 
     .input-wrap {
       position: relative;
+      z-index: 1;
     }
 
     input {
       width: 100%;
-      padding: 15px 16px 15px 46px;
-      border-radius: 16px;
+      padding: 16px 16px 16px 48px;
+      border-radius: 18px;
       border: 1px solid #E8D8CC;
-      background: #fff;
+      background: white;
       font-family: "Prompt", sans-serif;
-      font-size: 18px;
+      font-size: 19px;
       color: var(--espresso);
       outline: none;
-      transition: all .2s ease;
+      transition: all 0.2s ease;
       margin-bottom: 14px;
+      box-shadow: 0 8px 22px rgba(47,36,31,0.04);
     }
 
     input:focus {
       border-color: var(--arp-orange);
-      box-shadow: 0 0 0 4px rgba(228, 87, 46, 0.12);
+      box-shadow: 0 0 0 4px rgba(228,87,46,0.12), 0 8px 22px rgba(47,36,31,0.05);
     }
 
     .input-icon {
       position: absolute;
-      left: 14px;
-      top: 15px;
-      width: 20px;
-      height: 20px;
-      opacity: 0.65;
+      left: 15px;
+      top: 16px;
+      width: 21px;
+      height: 21px;
+      opacity: 0.66;
+      pointer-events: none;
     }
 
     .hint {
+      position: relative;
+      z-index: 1;
       background: rgba(222, 209, 189, 0.30);
       border: 1px dashed rgba(180, 76, 46, 0.35);
-      color: #6B4332;
+      color: #684534;
       padding: 14px;
-      border-radius: 16px;
+      border-radius: 17px;
       font-size: 13px;
       line-height: 1.65;
+      margin-bottom: 18px;
     }
 
     .buttons {
+      position: relative;
+      z-index: 1;
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 12px;
-      margin-top: 18px;
     }
 
     button {
       border: 0;
-      border-radius: 18px;
-      padding: 16px 12px;
+      border-radius: 20px;
+      padding: 17px 12px;
       font-family: "Kanit", sans-serif;
-      font-size: 18px;
+      font-size: 19px;
       font-weight: 700;
       cursor: pointer;
-      transition: transform .15s ease, box-shadow .2s ease, opacity .2s ease;
+      transition: transform 0.15s ease, box-shadow 0.2s ease, opacity 0.2s ease;
     }
 
     button:hover {
@@ -275,23 +323,22 @@
     .btn-in {
       background: linear-gradient(135deg, var(--arp-orange), var(--terracotta));
       color: white;
-      box-shadow: 0 10px 24px rgba(228, 87, 46, 0.25);
+      box-shadow: 0 12px 26px rgba(228, 87, 46, 0.28);
     }
 
     .btn-out {
-      background: linear-gradient(135deg, #3D2E26, #2F241F);
+      background: linear-gradient(135deg, #3A2B24, #2F241F);
       color: white;
-      box-shadow: 0 10px 24px rgba(47, 36, 31, 0.20);
+      box-shadow: 0 12px 26px rgba(47, 36, 31, 0.22);
     }
 
     .status {
       margin-top: 18px;
       display: none;
       padding: 14px 16px;
-      border-radius: 16px;
+      border-radius: 17px;
       font-size: 14px;
       line-height: 1.6;
-      word-break: break-word;
     }
 
     .status.show {
@@ -316,36 +363,20 @@
       border: 1px solid var(--error-border);
     }
 
-    .footer-note {
+    .secure-note {
       margin-top: 18px;
-      display: grid;
-      gap: 10px;
-      grid-template-columns: 1fr 1fr;
-    }
-
-    .mini-card {
-      background: #fff;
-      border: 1px solid rgba(180,76,46,0.14);
-      border-radius: 16px;
-      padding: 14px;
-    }
-
-    .mini-card .small {
-      font-size: 12px;
-      color: #8A7667;
-      margin-bottom: 6px;
-    }
-
-    .mini-card .big {
-      font-family: "Kanit", sans-serif;
-      font-size: 15px;
-      font-weight: 700;
-      color: var(--espresso);
-      line-height: 1.4;
+      background: rgba(255,255,255,0.78);
+      border: 1px solid rgba(180,76,46,0.12);
+      border-radius: 18px;
+      padding: 14px 15px;
+      font-size: 13px;
+      line-height: 1.6;
+      color: #7B6A5E;
+      text-align: center;
     }
 
     .bottom-brand {
-      margin-top: 16px;
+      margin-top: 18px;
       text-align: center;
       font-size: 12px;
       color: #8D7C6E;
@@ -353,16 +384,16 @@
     }
 
     .node-line {
-      stroke: rgba(255,255,255,0.34);
-      stroke-width: 1.6;
+      stroke: #2F241F;
+      stroke-width: 1.2;
     }
 
     .node-circle {
-      fill: rgba(255,255,255,0.9);
+      fill: #2F241F;
     }
 
-    .node-core {
-      fill: var(--arp-orange);
+    .node-orange {
+      fill: #E4572E;
     }
 
     @media (max-width: 520px) {
@@ -371,23 +402,25 @@
       }
 
       .header {
-        padding: 24px 18px 18px;
+        padding: 26px 18px 22px;
       }
 
       .content {
-        padding: 18px;
+        padding: 20px 16px 18px;
       }
 
-      .footer-note {
-        grid-template-columns: 1fr;
+      .logo-box {
+        width: 100px;
+        height: 100px;
+        border-radius: 24px;
+      }
+
+      .brand-title {
+        font-size: 24px;
       }
 
       .buttons {
         grid-template-columns: 1fr;
-      }
-
-      .brand-text h1 {
-        font-size: 22px;
       }
     }
   </style>
@@ -396,50 +429,54 @@
 <body>
   <main class="page">
     <section class="card">
-      <div class="top-pattern">
-        <svg viewBox="0 0 480 180" width="100%" height="100%" preserveAspectRatio="none">
-          <line class="node-line" x1="50" y1="48" x2="110" y2="70" />
-          <line class="node-line" x1="110" y1="70" x2="180" y2="42" />
-          <line class="node-line" x1="110" y1="70" x2="176" y2="110" />
-          <line class="node-line" x1="176" y1="110" x2="260" y2="88" />
-          <line class="node-line" x1="260" y1="88" x2="328" y2="126" />
-          <line class="node-line" x1="260" y1="88" x2="342" y2="42" />
-          <line class="node-line" x1="342" y1="42" x2="418" y2="70" />
 
-          <circle class="node-circle" cx="50" cy="48" r="5"/>
-          <circle class="node-core" cx="110" cy="70" r="8"/>
-          <circle class="node-circle" cx="180" cy="42" r="5"/>
-          <circle class="node-circle" cx="176" cy="110" r="5"/>
-          <circle class="node-core" cx="260" cy="88" r="7"/>
-          <circle class="node-circle" cx="328" cy="126" r="5"/>
-          <circle class="node-circle" cx="342" cy="42" r="5"/>
-          <circle class="node-circle" cx="418" cy="70" r="5"/>
-        </svg>
-      </div>
+      <svg class="network-bg" viewBox="0 0 500 720" preserveAspectRatio="none">
+        <line class="node-line" x1="70" y1="95" x2="150" y2="135"/>
+        <line class="node-line" x1="150" y1="135" x2="245" y2="88"/>
+        <line class="node-line" x1="150" y1="135" x2="228" y2="210"/>
+        <line class="node-line" x1="228" y1="210" x2="340" y2="170"/>
+        <line class="node-line" x1="340" y1="170" x2="420" y2="230"/>
+        <line class="node-line" x1="85" y1="520" x2="180" y2="575"/>
+        <line class="node-line" x1="180" y1="575" x2="280" y2="530"/>
+        <line class="node-line" x1="280" y1="530" x2="410" y2="610"/>
+
+        <circle class="node-circle" cx="70" cy="95" r="6"/>
+        <circle class="node-orange" cx="150" cy="135" r="9"/>
+        <circle class="node-circle" cx="245" cy="88" r="6"/>
+        <circle class="node-circle" cx="228" cy="210" r="6"/>
+        <circle class="node-orange" cx="340" cy="170" r="8"/>
+        <circle class="node-circle" cx="420" cy="230" r="6"/>
+        <circle class="node-circle" cx="85" cy="520" r="6"/>
+        <circle class="node-orange" cx="180" cy="575" r="9"/>
+        <circle class="node-circle" cx="280" cy="530" r="6"/>
+        <circle class="node-circle" cx="410" cy="610" r="6"/>
+      </svg>
 
       <header class="header">
-        <div class="brand-row">
-          <div class="brand-mark">AR</div>
-          <div class="brand-text">
-            <h1>ARP COFFEE</h1>
-            <p>Attendance System • Connect to Possibility</p>
-          </div>
+        <div class="logo-box">
+          <img src="arp-logo.png" alt="ARP COFFEE Logo" />
         </div>
 
+        <h1 class="brand-title">ARP COFFEE</h1>
+        <p class="brand-subtitle">Employee Attendance System</p>
+
         <div class="tagline">
-          <span>●</span>
-          <span>Connected • Warm • Franchise-Friendly</span>
+          <span class="pulse"></span>
+          <span>Connect to Possibility</span>
         </div>
       </header>
 
       <div class="content">
         <div class="panel">
           <div class="section-title">
-            <span class="dot"></span>
-            <h2>ลงเวลาทำงาน</h2>
+            <div class="icon">✓</div>
+            <div>
+              <h2>ลงเวลาทำงาน</h2>
+              <p>กรอกรหัสพนักงานเพื่อบันทึกเวลา</p>
+            </div>
           </div>
 
-          <label class="label" for="employeeCode">กรอกรหัสพนักงาน</label>
+          <label class="label" for="employeeCode">รหัสพนักงาน</label>
 
           <div class="input-wrap">
             <svg class="input-icon" viewBox="0 0 24 24" fill="none">
@@ -458,9 +495,9 @@
           </div>
 
           <div class="hint">
-            • ระบบนี้ใช้รหัสพนักงานแทนชื่อ เพื่อช่วยซ่อนข้อมูลบนหน้าเว็บ<br>
-            • หากกดเข้างานซ้ำ ระบบจะเก็บเฉพาะเวลาแรกสุด<br>
-            • หากกดออกงานซ้ำ ระบบจะเก็บเฉพาะเวลาล่าสุด
+            • กด <strong>เข้างาน</strong> เมื่อเริ่มงาน<br>
+            • กด <strong>ออกงาน</strong> เมื่อเลิกงาน<br>
+            • หากกดซ้ำ ระบบจะจัดการเวลาให้อัตโนมัติ
           </div>
 
           <div class="buttons">
@@ -471,27 +508,21 @@
           <div id="status" class="status"></div>
         </div>
 
-        <div class="footer-note">
-          <div class="mini-card">
-            <div class="small">ระบบคำนวณ</div>
-            <div class="big">วันทำงาน / เบี้ยขยัน / ค่าแรงรายวัน</div>
-          </div>
-          <div class="mini-card">
-            <div class="small">การใช้งาน</div>
-            <div class="big">รองรับมือถือและบันทึกลง Google Sheet</div>
-          </div>
+        <div class="secure-note">
+          ระบบลงเวลาพนักงานของ ARP COFFEE<br>
+          ข้อมูลจะถูกบันทึกเข้าสู่ระบบโดยอัตโนมัติ
         </div>
 
         <div class="bottom-brand">
-          ARP COFFEE Employee Attendance System<br>
-          Designed in ARP Brand Direction
+          ARP COFFEE • Attendance System<br>
+          Connected Pattern System
         </div>
       </div>
     </section>
   </main>
 
   <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbynlT2BSbimt_91aCW0Gl3pzJhmkA-Ha5OJJaPh0lcP_7Ih3XmbclrHkHAT8ySxKn0uLw/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyzu48iL9QOjgGyLF4AagFiaov_QdTA0jD7ZMTq-Y37d95z_e_CyaLoG9qAmQAYMXrEQw/exec";
 
     const employeeCodeInput = document.getElementById("employeeCode");
     const statusBox = document.getElementById("status");
@@ -553,7 +584,7 @@
 
         setStatus(
           "success",
-          actionText + "<br>ระบบได้ส่งข้อมูลไปยัง Google Sheet แล้ว"
+          actionText + "<br>ข้อมูลถูกส่งเข้าสู่ระบบแล้ว"
         );
 
         employeeCodeInput.value = "";
