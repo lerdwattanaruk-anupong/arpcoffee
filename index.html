@@ -167,8 +167,7 @@
   </div>
 
   <script>
-    // 1) เอา URL จาก Google Apps Script Web App มาใส่ตรงนี้
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx4lhbXLnl7219z1Si-4gPd2MjgjnHFyvNwM6IO19MH9hR5lufaFLadBI7Ic1cpV8uJ/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbynlT2BSbimt_91aCW0Gl3pzJhmkA-Ha5OJJaPh0lcP_7Ih3XmbclrHkHAT8ySxKn0uLw/exec";
 
     const employeeSelect = document.getElementById("employee");
     const statusBox = document.getElementById("status");
@@ -206,21 +205,15 @@
         return;
       }
 
-      if (SCRIPT_URL === "PASTE_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE") {
-        setStatus("error", "ยังไม่ได้ใส่ Google Apps Script Web App URL ในไฟล์ index.html");
-        return;
-      }
-
       setLoading(true);
       setStatus("loading", "กำลังบันทึกข้อมูล...");
 
-      // โหมดนี้พยายามเก็บพิกัด แต่ถ้าผู้ใช้ไม่อนุญาต ก็ยังบันทึกเวลาได้
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
           position => {
             sendToGoogleSheet({
-              employee,
-              action,
+              employee: employee,
+              action: action,
               latitude: position.coords.latitude,
               longitude: position.coords.longitude,
               accuracy: position.coords.accuracy
@@ -228,8 +221,8 @@
           },
           () => {
             sendToGoogleSheet({
-              employee,
-              action,
+              employee: employee,
+              action: action,
               latitude: "",
               longitude: "",
               accuracy: ""
@@ -243,8 +236,8 @@
         );
       } else {
         sendToGoogleSheet({
-          employee,
-          action,
+          employee: employee,
+          action: action,
           latitude: "",
           longitude: "",
           accuracy: ""
@@ -274,7 +267,7 @@
         setLoading(false);
         setStatus(
           "success",
-          data.employee + " บันทึก" + data.action + "สำเร็จ<br>กรุณาตรวจสอบข้อมูลใน Google Sheet"
+          data.employee + " บันทึก" + data.action + "เรียบร้อย<br>กรุณาตรวจสอบข้อมูลใน Google Sheet"
         );
       })
       .catch(error => {
