@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
   <title>ARP COFFEE Attendance</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -16,7 +17,6 @@
       --espresso: #2F241F;
       --sand: #DED1BD;
       --cream: #F7F4EE;
-      --taupe: #9C8A7C;
       --white: #FFFFFF;
       --success-bg: #ECFDF3;
       --success-text: #16803C;
@@ -115,6 +115,15 @@
       height: 100%;
       object-fit: contain;
       display: block;
+    }
+
+    .logo-fallback {
+      display: none;
+      font-family: "Kanit", sans-serif;
+      font-weight: 800;
+      color: var(--espresso);
+      font-size: 32px;
+      letter-spacing: 0.05em;
     }
 
     .brand-title {
@@ -454,7 +463,8 @@
 
       <header class="header">
         <div class="logo-box">
-          <img src="arp-logo.png" alt="ARP COFFEE Logo" />
+          <img src="arp-logo.png" alt="ARP COFFEE Logo" onerror="this.style.display='none'; document.querySelector('.logo-fallback').style.display='block';" />
+          <div class="logo-fallback">ARP</div>
         </div>
 
         <h1 class="brand-title">ARP COFFEE</h1>
@@ -487,8 +497,8 @@
 
             <input
               id="employeeCode"
-              type="password"
-              inputmode="text"
+              type="text"
+              inputmode="numeric"
               placeholder="กรอกรหัสพนักงาน"
               autocomplete="off"
             />
@@ -558,41 +568,59 @@
     }
 
     function sendToGoogleSheet(data) {
-      const payload = {
+      const callbackName = "arpCallback_" + Date.now();
+
+      window[callbackName] = function(result) {
+        setLoading(false);
+
+        if (result && result.ok) {
+          setStatus(
+            "success",
+            result.message + "<br>ข้อมูลถูกส่งเข้าสู่ระบบแล้ว"
+          );
+
+          employeeCodeInput.value = "";
+        } else {
+          setStatus(
+            "error",
+            result && result.message
+              ? result.message
+              : "บันทึกไม่สำเร็จ"
+          );
+        }
+
+        delete window[callbackName];
+
+        const oldScript = document.getElementById(callbackName);
+        if (oldScript) {
+          oldScript.remove();
+        }
+      };
+
+      const params = new URLSearchParams({
+        mode: "jsonp",
+        callback: callbackName,
         employeeCode: data.employeeCode,
-        action: data.action,
+        actionType: data.action,
         latitude: data.latitude,
         longitude: data.longitude,
         accuracy: data.accuracy,
         userAgent: navigator.userAgent
+      });
+
+      const script = document.createElement("script");
+      script.id = callbackName;
+      script.src = SCRIPT_URL + "?" + params.toString();
+
+      script.onerror = function() {
+        setLoading(false);
+        setStatus("error", "เชื่อมต่อระบบไม่ได้ กรุณาลองใหม่อีกครั้ง");
+
+        delete window[callbackName];
+        script.remove();
       };
 
-      fetch(SCRIPT_URL, {
-        method: "POST",
-        mode: "no-cors",
-        headers: {
-          "Content-Type": "text/plain;charset=utf-8"
-        },
-        body: JSON.stringify(payload)
-      })
-      .then(() => {
-        setLoading(false);
-
-        const actionText = data.action === "เข้างาน"
-          ? "บันทึกเข้างานเรียบร้อย"
-          : "บันทึกออกงานเรียบร้อย";
-
-        setStatus(
-          "success",
-          actionText + "<br>ข้อมูลถูกส่งเข้าสู่ระบบแล้ว"
-        );
-
-        employeeCodeInput.value = "";
-      })
-      .catch(error => {
-        setLoading(false);
-        setStatus("error", "บันทึกไม่สำเร็จ: " + error.message);
-      });
+      document.body.appendChild(script);
     }
 
     employeeCodeInput.addEventListener("keydown", function(event) {
